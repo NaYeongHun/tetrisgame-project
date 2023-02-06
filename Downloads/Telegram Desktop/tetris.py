@@ -1,72 +1,46 @@
-# import sys
-# import os
-# from material import *
-# import pygame
-# from pygame.locals import QUIT, KEYDOWN, K_ESCAPE
-
-# # 전역 변수
-# pygame.init()
-# SURPACE = pygame.display.set_mode([600, 600])
-# WiDTH = 10 + 2
-# HEIGHT = 20 + 1
-# FIELD = [[0 for _ in range(WiDTH)] for _ in range(HEIGHT)]
-# FPSCLOCK = pygame.time.Clock()
-# FPS = 15
-
-# def main():
-#     for ypos in range(HEIGHT):
-#         for xpos in range(WiDTH):
-#             FIELD[ypos][xpos] = 'W' if xpos == 0 or xpos == WiDTH - 1 else 'B'
-#         for index in range(WiDTH):
-#             FIELD[HEIGHT - 1] [index] = 'W'
-
-#     # 게임 무한루프 수행
-#     while True:
-#         # 이벤트 루프를 확인
-#         key = None
-#         for event in pygame.event.get():
-#             if event.type == QUIT(): # 종료 이벤트
-#                 pygame.quit()
-#                 sys.exit()
-#             elif event.type == KEYDOWN:
-#                 key = event.key
-#                 if key == K_ESCAPE:
-#                     pygame.quit()
-#                     sys.exit()
-#         # 필드 그리기   
-#         SURPACE.fill((0,0,0))
-#         for ypos in range(HEIGHT):
-#             for xpos in range(WiDTH):
-#                 value = FIELD[ypos][xpos]
-#                 pygame.draw.rect(SURPACE, COLORS[value],(xpos*25+25,ypos*25+25,24,24))
-
-
-#         # 화면 업데이트
-#         pygame.display.update()
-#         FPSCLOCK.tick(FPS)
-
-# if __name__ == '__main()':
-#     main()
-
 import pygame
 
-pygame.init() # 초기화 (반드시 필요)
+WEIGHT, HEIGHT = 10, 20
+TILE = 45
+GAME_RES = WEIGHT * TILE, HEIGHT * TILE
+FPS = 60
 
-# 화면 크기 설정
-screen_width = 480 # 가로 크기
-screen_height = 640 # 세로 크기
-screen = pygame.display.set_mode((screen_width, screen_height))
+# 초기화
+pygame.init()
+SURPACE= pygame.display.set_mode(GAME_RES)
+clock = pygame.time.Clock()
 
-# 화면 타이틀 설정
-pygame.display.set_caption("Nado Game") # 게임 이름
+grid =[pygame.Rect(x * TILE, y * TILE, TILE, TILE) for x in range(WEIGHT) for y in range(HEIGHT)]
 
-# 이벤트 루프
-running = True # 게임이 진행중인가?
-while running:
-    for event in pygame.event.get(): # 어떤 이벤트가 발생하였는가?
-        if event.type == pygame.QUIT: # 창이 닫히는 이벤트가 발생하였는가?
-            running  = False # 게임이 진행중이 아님
+figures_pos = [[(-1, 0), (-2, 0), (0, 0), (1, 0)],
+               [(0, -1), (-1, -1), (-1, 0), (0, 0)],
+               [(-1, 0), (-1, 1), (0, 0), (0, -1)],
+               [(0, 0), (-1, 0), (0, 1), (-1, -1)],
+               [(0, 0), (0, -1), (0, 1), (-1, -1)],
+               [(0, 0), (0, -1), (0, 1), (1, -1)],
+               [(0, 0), (0, -1), (0, 1), (-1, 0)]]
 
+blocks = [[pygame.Rect(x + WEIGHT// 2, y + 1, 1, 1) for x, y in fig_pos] for fig_pos in figures_pos]
+block_rect = pygame.Rect(0, 0, TILE - 2, TILE - 2)
 
-# pygame 종료
-pygame.quit()
+block = blocks[0]
+
+while True:
+    SURPACE.fill(pygame.Color('black'))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+
+    # 격자(화면) 그리기
+    [pygame.draw.rect(SURPACE,(40,40,40), i_rect,1) for i_rect in grid]
+
+    # 블록 그리기
+    for i in range(4):
+        block_rect.x =block[i].x * TILE
+        block_rect.y =block[i].y * TILE
+        pygame.draw.rect(SURPACE, pygame.Color('white'),block_rect)
+    
+
+    pygame.display.flip()
+    clock.tick(FPS)
