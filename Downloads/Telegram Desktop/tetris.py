@@ -52,6 +52,9 @@ while True:
                 dx =-1
             elif event.key == pygame.K_RIGHT:
                 dx = 1
+            # 다운 키를 눌렀을때 빨리 내려오기
+            elif event.key == pygame.K_DOWN:
+                limit = 100
 
     # 격자(화면) 그리기
     [pygame.draw.rect(SURPACE,(40,40,40), i_rect,1) for i_rect in grid]
@@ -72,6 +75,7 @@ while True:
             block[i].y += 1
             if not check_borders():
                     block =deepcopy(block_old)
+                    limit =100
                     break
 
     # 하나 블록 그리기
