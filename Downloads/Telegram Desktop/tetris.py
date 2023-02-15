@@ -34,6 +34,9 @@ count, speed, limit = 0, 60, 2000
 
 block = deepcopy(choice(blocks))
 
+# 블록 색깔 랜덤으로 정해주기
+get_color = lambda : (randrange(30,256),randrange(30,256),randrange(30,256))
+color = get_color()
 #블록이 벽을 벗어나지 않게 해주는 코드
 def check_borders():
     if block[i].x < 0 or block[i].x > WEIGHT - 1:
@@ -67,9 +70,6 @@ while True:
             elif event.key == pygame.K_UP:
                 rotate =True
 
-    # 격자(화면) 그리기
-    [pygame.draw.rect(SURPACE,(40,40,40), i_rect,1) for i_rect in grid]
-
     # x측 음직이기
     block_old = deepcopy(block)
     for i in range(4):
@@ -86,7 +86,8 @@ while True:
             block[i].y += 1
             if not check_borders():
                 for i in range(4):
-                    field[block_old[i].y][block_old[i].x] = pygame.Color('white')
+                    field[block_old[i].y][block_old[i].x] = color
+                color = get_color()
                 block =deepcopy(choice(blocks))
                 # 이 숫자가 커야 다음 블록도 빨리 안떨어짐
                 limit =2000
@@ -105,11 +106,26 @@ while True:
             if not check_borders():
                 block =deepcopy(block_old)
                 break
+
+    # 밑에 줄 차면 지우기
+    line = HEIGHT - 1
+    for row in range(HEIGHT - 1, -1, -1):
+        del_count = 0
+        for i in range(WEIGHT):
+            if field[row][i]:
+                del_count += 1
+            field[line][i] = field[row][i]
+        if del_count < WEIGHT:
+            line -= 1
+
+    # 격자(화면) 그리기
+    [pygame.draw.rect(SURPACE,(40,40,40), i_rect,1) for i_rect in grid]
+
     # 하나 블록 그리기
     for i in range(4):
         block_rect.x =block[i].x * TILE
         block_rect.y =block[i].y * TILE
-        pygame.draw.rect(SURPACE, pygame.Color('white'),block_rect)
+        pygame.draw.rect(SURPACE, color, block_rect)
 
     # 필드 그리기
     for y, raw in enumerate(field):
